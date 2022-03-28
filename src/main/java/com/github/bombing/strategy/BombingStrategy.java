@@ -10,5 +10,9 @@ package com.github.bombing.strategy;
  */
 public interface BombingStrategy {
 
+    default boolean isAvailable() {
+        return true;
+    }
+
     void doExec();
 }

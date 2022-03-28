@@ -1,6 +1,7 @@
 package com.github.bombing;
 
 import com.github.bombing.strategy.BombingStrategy;
+import com.github.bombing.strategy.JinRongHaoStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +22,12 @@ public class BombingExecutor {
     }
 
     private void initBombingStrategy() {
-        //bombings.add(new JinRongHaoStrategy());
+        bombings.add(new JinRongHaoStrategy());
     }
 
     public void exec() {
-        bombings.forEach(BombingStrategy::doExec);
+        bombings.stream()
+                .filter(BombingStrategy::isAvailable)
+                .forEach(BombingStrategy::doExec);
     }
 }

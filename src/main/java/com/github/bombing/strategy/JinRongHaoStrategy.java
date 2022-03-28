@@ -11,7 +11,12 @@ import java.net.URL;
  * @date: 2022/3/15
  * @version: 1.0
  */
-public class JinRongHaoStrategy extends AbstractBombingStrategy {
+public class JinRongHaoStrategy extends AbstractBombingStrategy<Integer> {
+
+    @Override
+    public boolean isAvailable() {
+        return false;
+    }
 
     @Override
     public Strategy strategy() {
@@ -24,7 +29,8 @@ public class JinRongHaoStrategy extends AbstractBombingStrategy {
     }
 
     @Override
-    protected void doResp(String res) {
+    protected void doResp(Integer res) {
         logger.info(">>> " + strategy().getDesc() + " 返回内容为: " + res);
     }
+
 }
