@@ -13,7 +13,9 @@ public enum Strategy {
     /**
      * 金融号
      */
-    JIN_RONG_HAO("金融号", "https://jrh.financeun.com/Login/sendMessageCode3.html?mobile=%s&mbid=197858&check=3", "GET");
+    JIN_RONG_HAO("金融号", "https://jrh.financeun.com/Login/sendMessageCode3.html?mobile=%s&mbid=197858&check=3", "GET"),
+
+    ;
 
     private final String desc;
     private final String url;
