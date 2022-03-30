@@ -3,7 +3,6 @@ package com.github.bombing.strategy;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.bombing.config.Config;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -15,6 +14,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +44,7 @@ public abstract class AbstractBombingStrategy<RESP> implements BombingStrategy {
         }
     };
 
-    protected HttpsURLConnection con;
+    protected URLConnection con;
 
     protected String phone = Config.getInstance().getPhone();
 
@@ -52,7 +52,9 @@ public abstract class AbstractBombingStrategy<RESP> implements BombingStrategy {
 
     public abstract Strategy strategy();
 
-    public abstract URL url() throws MalformedURLException;
+    protected URL url() throws MalformedURLException {
+        return new URL(String.format(strategy().getUrl(), phone));
+    }
 
     protected void before() {
     }
@@ -61,18 +63,21 @@ public abstract class AbstractBombingStrategy<RESP> implements BombingStrategy {
         return null;
     }
 
-    protected final HttpsURLConnection connection() throws IOException {
+    protected final URLConnection connection() throws IOException {
         if (this.con != null) {
             return this.con;
         }
         Strategy strategy = strategy();
-        this.con = (HttpsURLConnection) url().openConnection();
-        this.con.setRequestMethod(strategy.getMethod());
-        HEADERS.forEach(this.con::setRequestProperty);
-        this.con.setDoOutput(true);
-        this.con.setDoInput(true);
-        this.con.setUseCaches(false);
-        this.con.connect();
+        URLConnection con = url().openConnection();
+        if (con instanceof HttpURLConnection c) {
+            c.setRequestMethod(strategy.getMethod());
+        }
+        HEADERS.forEach(con::setRequestProperty);
+        con.setDoOutput(true);
+        con.setDoInput(true);
+        con.setUseCaches(false);
+        con.connect();
+        this.con = con;
         return this.con;
     }
 
@@ -81,7 +86,7 @@ public abstract class AbstractBombingStrategy<RESP> implements BombingStrategy {
         Strategy strategy = strategy();
         try {
             this.before();
-            HttpURLConnection connection = connection();
+            URLConnection connection = connection();
             String body = body();
             if (null != body && body.length() != 0) {
                 try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8))) {
@@ -91,17 +96,21 @@ public abstract class AbstractBombingStrategy<RESP> implements BombingStrategy {
             }
 
             logger.info(">>> 准备请求: " + strategy.getDesc() + ", 请求地址: " + url().toString());
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                InputStream inputStream = connection.getInputStream();
-                String res = readResponse(inputStream);
-                logger.info(LOG_RESPONSE_SUPPLIER.apply(strategy, connection));
-                this.doResp(this.resp(res));
-            } else {
-                logger.warning(() -> String.format(">>> %s 请求失败, 状态码: %s", strategy.getDesc(), responseCode));
+            if (connection instanceof HttpURLConnection c) {
+                int responseCode = c.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    InputStream inputStream = connection.getInputStream();
+                    String res = readResponse(inputStream);
+                    logger.info(LOG_RESPONSE_SUPPLIER.apply(strategy, c));
+                    String contentType = c.getHeaderField(CONTENT_TYPE);
+                    this.doResp(contentType != null && contentType.contains("json") ? this.resp(res) : (RESP) String.valueOf(res));
+                } else {
+                    logger.warning(() -> String.format(">>> %s 请求失败, 状态码: %s", strategy.getDesc(), responseCode));
+                }
+
+                c.disconnect();
             }
 
-            connection.disconnect();
             this.con = null;
         } catch (IOException e) {
             Supplier<String> msg = () -> String.format(">>> 请求异常, 请求网站: %s, 请求方式: %s, url: %s, 异常信息: %s", strategy.getDesc(), strategy.getUrl(), strategy.getMethod(), e.getMessage());

@@ -1,8 +1,5 @@
 package com.github.bombing.strategy;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 /**
  * @projectName: SMS-bombing
  * @package: com.github.bombing.execute.strategy
@@ -21,11 +18,6 @@ public class JinRongHaoStrategy extends AbstractBombingStrategy<Integer> {
     @Override
     public Strategy strategy() {
         return Strategy.JIN_RONG_HAO;
-    }
-
-    @Override
-    public URL url() throws MalformedURLException {
-        return new URL(String.format(strategy().getUrl(), phone));
     }
 
     @Override

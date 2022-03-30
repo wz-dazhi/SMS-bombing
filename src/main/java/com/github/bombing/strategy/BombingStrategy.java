@@ -1,5 +1,6 @@
 package com.github.bombing.strategy;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -11,7 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @version: 1.0
  */
 public interface BombingStrategy {
-    ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    ObjectMapper OBJECT_MAPPER = new ObjectMapper() {{
+        this.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+    }};
+
+    String CONTENT_TYPE = "Content-Type";
+    String COOKIE = "Cookie";
 
     default boolean isAvailable() {
         return true;
