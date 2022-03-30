@@ -3,6 +3,8 @@ package com.github.bombing.strategy;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.UUID;
+
 /**
  * @projectName: SMS-bombing
  * @package: com.github.bombing
@@ -21,6 +23,10 @@ public interface BombingStrategy {
 
     default boolean isAvailable() {
         return true;
+    }
+
+    default String uuid() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     void doExec();

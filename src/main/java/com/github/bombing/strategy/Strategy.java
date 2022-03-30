@@ -25,6 +25,15 @@ public enum Strategy {
      */
     BOOK_51("51book", "http://caigou.51book.com/caigou/dwr/call/plaincall/UserCheck.sendMsgxxx.dwr", "POST"),
 
+    /**
+     * 手机中国
+     */
+    CNMO("手机中国", "http://passport.cnmo.com/index.php?c=Member_Ajax_Register&m=SendMessageCode&Jsoncallback=jQuery18307588430132219965_1648624388005&mobile=%s&type=1&_=1648624591579", "GET"),
+
+    /**
+     * 粉笔
+     */
+    FENBI("粉笔", "https://tiku.fenbi.com/api/users/phone/verification?kav=12&app=web&client_context_id=569d4467893d0e492d8f055dcff47d53", "POST"),
     ;
 
     private final String desc;

@@ -1,9 +1,6 @@
 package com.github.bombing;
 
-import com.github.bombing.strategy.BombingStrategy;
-import com.github.bombing.strategy.Book51Strategy;
-import com.github.bombing.strategy.JinRongHaoStrategy;
-import com.github.bombing.strategy.YoJiangStrategy;
+import com.github.bombing.strategy.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +24,8 @@ public class BombingExecutor {
         bombings.add(new JinRongHaoStrategy());
         bombings.add(new YoJiangStrategy());
         bombings.add(new Book51Strategy());
+        bombings.add(new CNMOStrategy());
+        bombings.add(new FenBiStrategy());
     }
 
     public void exec() {

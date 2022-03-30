@@ -3,7 +3,6 @@ package com.github.bombing.strategy;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @projectName: SMS-bombing
@@ -22,7 +21,7 @@ public class YoJiangStrategy extends AbstractBombingStrategy<YoJiangStrategy.Res
 
     @Override
     protected void before() {
-        HEADERS.put(COOKIE, "guest_uuid=" + UUID.randomUUID().toString().replace("-", "").substring(0, 24) + "");
+        HEADERS.put(COOKIE, "guest_uuid=" + uuid().substring(0, 24) + "");
     }
 
     @Override
